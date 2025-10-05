@@ -23,17 +23,11 @@ window.addEventListener('load', function() {
         
         if (response.ok) {
             console.log('🎉 Comentario publicado exitosamente');
-            alert('✅ Comentario XSS publicado!');
-            // Redirigir a comments para ver el resultado
-            setTimeout(() => {
-                window.location.href = '/comments';
-            }, 1500);
         } else if (response.redirected) {
             console.log('🔒 Redirigiendo...');
             window.location.href = response.url;
         } else {
             console.log('❌ Error HTTP:', response.status);
-            alert('❌ Error: ' + response.status);
         }
         return response.text();
     })
@@ -42,6 +36,5 @@ window.addEventListener('load', function() {
     })
     .catch(error => {
         console.log('💥 Error de red:', error);
-        alert('💥 Error: ' + error.message);
     });
 });
